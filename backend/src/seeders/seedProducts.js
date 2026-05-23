@@ -889,5 +889,9 @@ const seedDatabase = async () => {
   }
 };
 
-// Run seeder
-seedDatabase();
+// Run seeder only if run directly via command line
+if (require.main === module) {
+  seedDatabase();
+}
+
+module.exports = { seedDatabase };

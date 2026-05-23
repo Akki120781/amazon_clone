@@ -5,21 +5,43 @@ const fs = require('fs');
 
 require('dotenv').config();
 
-const usePostgres = !!(process.env.DB_HOST && process.env.DB_NAME);
+const connectionString = process.env.DATABASE_URL || process.env.DATABASE_URL_INTERNAL;
+const host = process.env.DB_HOST || process.env.Hostname;
+const dbName = process.env.DB_NAME || process.env.Database;
+const dbUser = process.env.DB_USER || process.env.Username;
+const dbPassword = process.env.DB_PASSWORD || process.env.Password;
+const dbPort = process.env.DB_PORT || process.env.Port || 5432;
+
+const usePostgres = !!(connectionString || (host && dbName));
 let pgPool = null;
 let sqliteDb = null;
 
 if (usePostgres) {
-  pgPool = new Pool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT || 5432,
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+  const sslConfig = (connectionString && connectionString.includes('render.com')) || 
+                    (host && host.includes('render.com')) || 
+                    process.env.NODE_ENV === 'production'
+                      ? { rejectUnauthorized: false }
+                      : false;
+
+  const poolConfig = connectionString ? {
+    connectionString,
+    ssl: sslConfig,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-  });
+  } : {
+    host,
+    port: dbPort,
+    database: dbName,
+    user: dbUser,
+    password: dbPassword,
+    ssl: sslConfig,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  };
+
+  pgPool = new Pool(poolConfig);
   
   pgPool.on('connect', () => {
     console.log('✅ PostgreSQL Database connected successfully');
