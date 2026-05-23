@@ -23,7 +23,16 @@ app.use(helmet({
 }));
 app.use(morgan('dev')); // Logging
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const isLocalhost = origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:');
+    const isConfiguredFront = origin === process.env.FRONTEND_URL;
+    if (isLocalhost || isConfiguredFront || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());

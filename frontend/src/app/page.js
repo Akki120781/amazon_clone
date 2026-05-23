@@ -212,7 +212,7 @@ export default function Home() {
                 <h2 className="text-lg font-bold text-gray-900 mb-3">Home Essentials</h2>
                 <div className="h-40 overflow-hidden mb-3">
                   <img
-                    src="https://images.unsplash.com/photo-1585515320310-259814833dcf?w=400"
+                    src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=400"
                     alt="Home"
                     className="w-full h-full object-cover rounded hover:opacity-90 transition-opacity"
                   />
