@@ -112,7 +112,8 @@ export default function ProductDetails({ params }) {
   }
 
   // Parse dollar and cents for Amazon styles
-  const priceParts = product.price.toFixed(2).split('.');
+  const price = typeof product.price === 'number' ? product.price : parseFloat(product.price || 0);
+  const priceParts = price.toFixed(2).split('.');
   const dollars = priceParts[0];
   const cents = priceParts[1];
 

@@ -1,5 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
-const { Pool } = require('pg');
+const { Pool, types } = require('pg');
+// Force PG to return numeric/decimal columns as numbers instead of strings
+types.setTypeParser(1700, (val) => parseFloat(val));
 const path = require('path');
 const fs = require('fs');
 
